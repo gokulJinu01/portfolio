@@ -126,7 +126,7 @@ const ContactForm = () => {
             {renderAnimatedTitle("Get In Touch")}
           </h2>
           <div className="section-underline"></div>
-          <p className="contact-intro">Have a project in mind or want to collaborate? Feel free to reach out!</p>
+          <p className="contact-intro"><strong>Let's discuss your next project.</strong> Have a project in mind or want to collaborate? Feel free to reach out!</p>
         </div>
         
         <div className="contact-content">
@@ -180,6 +180,7 @@ const ContactForm = () => {
               <form className="contact-form" onSubmit={handleSubmit}>
                 <div className="form-row">
                   <div className="form-group">
+                    <label htmlFor="name">Name</label>
                     <input 
                       type="text" 
                       id="name" 
@@ -191,34 +192,37 @@ const ContactForm = () => {
                     />
                   </div>
                   <div className="form-group">
+                    <label htmlFor="email">Email</label>
                     <input 
                       type="email" 
                       id="email" 
                       name="email"
                       value={formState.email}
                       onChange={handleChange}
-                      placeholder="Your Email" 
+                      placeholder="your@email.com" 
                       required 
                     />
                   </div>
                 </div>
                 <div className="form-group">
+                  <label htmlFor="subject">Subject</label>
                   <input 
                     type="text" 
                     id="subject" 
                     name="subject"
                     value={formState.subject}
                     onChange={handleChange}
-                    placeholder="Subject" 
+                    placeholder="What would you like to talk about?" 
                   />
                 </div>
                 <div className="form-group">
+                  <label htmlFor="message">Message</label>
                   <textarea 
                     id="message" 
                     name="message"
                     value={formState.message}
                     onChange={handleChange}
-                    placeholder="Your Message" 
+                    placeholder="Write your message here..." 
                     rows="6" 
                     required
                   ></textarea>

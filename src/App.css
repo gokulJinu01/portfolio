@@ -5,7 +5,7 @@
   --text-color: #212529;
   --text-light: #6c757d;
   --accent-color: #FF6C5C;
-  --background-color: #ffffff;
+  --background-color: #ffffff; /* base fallback */
   --section-padding: 30px 0;
   --card-background: #f8f9fa;
   --dark-background: #212529;
@@ -13,6 +13,22 @@
   --transition-speed: 0.3s;
   --card-bg: #ffffff;
   --background-color-hover: rgba(92, 107, 192, 0.03);
+  
+  /* Site-wide gradient colors */
+  --bg1: #134E5E; /* deep teal */
+  --bg2: #0B3037; /* darker teal */
+  /* Contact/section card gradient */
+  --contact-grad-a: #141E30;
+  --contact-grad-b: #35577D;
+  /* Comic/3D typography */
+  --comic-fill: #f5f7fa;
+  --comic-edge: rgba(0,0,0,0.55);
+  
+  /* Grid overlay (toned down) */
+  --grid-size: 24px;
+  --grid-color: rgba(0, 0, 0, 0.03);
+  --grid-bold-color: rgba(0, 0, 0, 0.05);
+  /* Grid gutters are computed via media queries for compatibility */
   
   /* Contact form variables */
   --text-primary: #212529;
@@ -27,12 +43,23 @@
 
 body {
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--background-color);
+  /* Rich mixed gradient background across the whole site */
+  background:
+    radial-gradient(1200px 800px at -10% -10%, color-mix(in srgb, var(--bg2) 30%, transparent) 0%, transparent 60%),
+    radial-gradient(1200px 800px at 110% -10%, color-mix(in srgb, var(--bg1) 30%, transparent) 0%, transparent 60%),
+    radial-gradient(1000px 600px at 20% 120%, color-mix(in srgb, var(--bg1) 28%, transparent) 0%, transparent 60%),
+    radial-gradient(1000px 600px at 80% 120%, color-mix(in srgb, var(--bg2) 28%, transparent) 0%, transparent 60%),
+    linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+  background-attachment: fixed, fixed, fixed, fixed, fixed;
+  background-size: auto, auto, auto, auto, 280% 280%;
+  background-position: center, center, center, center, 30% 50%;
   color: var(--text-color);
   line-height: 1.6;
-  transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+  transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
               color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* gradient motion disabled for calmer look */
 
 /* Dark Theme */
 body.dark-theme {
@@ -53,6 +80,10 @@ body.dark-theme {
   --border-color: #333333;
   --footer-bg: #1a1a1a;
   --background-color-hover: rgba(92, 107, 192, 0.08);
+  
+  /* Grid overlay for dark background (toned down) */
+  --grid-color: rgba(255, 255, 255, 0.03);
+  --grid-bold-color: rgba(255, 255, 255, 0.05);
 }
 
 * {
@@ -68,12 +99,75 @@ body.dark-theme {
   position: relative;
 }
 
-.app-container::after {
-  display: none;
+/* Full overlay grid with elliptical cutout around content */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1; /* under navbar/content (navbar z-index is higher) */
+  /* thin grid + bolder every 5 cells, both axes */
+  background-image:
+    repeating-linear-gradient(0deg,
+      var(--grid-color) 0px,
+      var(--grid-color) 1px,
+      transparent 1px,
+      transparent var(--grid-size)
+    ),
+    repeating-linear-gradient(90deg,
+      var(--grid-color) 0px,
+      var(--grid-color) 1px,
+      transparent 1px,
+      transparent var(--grid-size)
+    ),
+    repeating-linear-gradient(0deg,
+      transparent 0,
+      transparent calc(var(--grid-size) * 5 - 1px),
+      var(--grid-bold-color) calc(var(--grid-size) * 5 - 1px),
+      var(--grid-bold-color) calc(var(--grid-size) * 5)
+    ),
+    repeating-linear-gradient(90deg,
+      transparent 0,
+      transparent calc(var(--grid-size) * 5 - 1px),
+      var(--grid-bold-color) calc(var(--grid-size) * 5 - 1px),
+      var(--grid-bold-color) calc(var(--grid-size) * 5)
+    );
+  will-change: transform;
+  mix-blend-mode: multiply; /* subtle on light bg; tuned via theme vars */
+  
+  /* Elliptical mask: hide grid around center content + navbar band */
+  --mask-rx: min(55vw, 620px);
+  --mask-ry: min(42vh, 380px);
+  --nav-band: 90px; /* hide grid behind fixed navbar */
+  -webkit-mask-image:
+    radial-gradient(ellipse var(--mask-rx) var(--mask-ry) at 50% 45%,
+      transparent 0%, transparent 70%, black 75%, black 100%),
+    linear-gradient(#000 0, #000 calc(var(--nav-band)), transparent calc(var(--nav-band)), transparent 100%);
+  -webkit-mask-composite: source-over;
+  mask-image:
+    radial-gradient(ellipse var(--mask-rx) var(--mask-ry) at 50% 45%,
+      transparent 0%, transparent 70%, black 75%, black 100%),
+    linear-gradient(#000 0, #000 calc(var(--nav-band)), transparent calc(var(--nav-band)), transparent 100%);
+  mask-composite: add;
 }
 
-body.theme-transition .app-container::after {
-  display: none;
+body.theme-transition::before {
+  /* keep grid visible during theme transition */
+}
+
+/* Mobile paint reduction: simplify background + hide grid overlay */
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll, scroll, scroll, scroll, scroll;
+  }
+  body::before { display: none; }
+}
+
+/* Respect reduced motion: soften transitions/animations */
+@media (prefers-reduced-motion: reduce) {
+  .btn::before, .btn::after { transition: none !important; }
+  .submit-btn::before, .submit-btn::after { transition: none !important; }
+  .contact .contact-card, .contact .contact-form { animation: none !important; transform: none !important; }
 }
 
 main {
@@ -114,47 +208,68 @@ a:hover::after {
 }
 
 .btn {
+  --btn-a: var(--contact-grad-a);
+  --btn-b: var(--contact-grad-b);
+  position: relative;
   display: inline-block;
-  padding: 9px 20px;
-  background: linear-gradient(-45deg, var(--primary-color), #8e99d7, #4757b8, var(--accent-color));
-  background-size: 400% 400%;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, var(--btn-a), var(--btn-b));
+  background-size: 200% 200%;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   text-align: center;
-  transition: all var(--transition-speed);
-  animation: gradientMoveButton 10s ease infinite;
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease, background-position .4s ease;
+  overflow: hidden;
 }
 
-@keyframes gradientMoveButton {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+.btn::before{
+  content: "";
+  position: absolute;
+  top: -120%;
+  left: -30%;
+  width: 60%;
+  height: 300%;
+  background: radial-gradient(circle at 30% 50%, rgba(255,255,255,.35), rgba(255,255,255,0) 60%);
+  transform: translateX(-120%) rotate(12deg);
+  transition: transform .9s cubic-bezier(.2,.8,.2,1);
+  pointer-events: none;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow-color);
-  animation: gradientMoveButton 5s ease infinite;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(0,0,0,.15);
+  background-position: 100% 50%;
 }
 
-.primary-btn {
-  background-color: var(--primary-color);
-  transition: background-color 0.3s ease;
+.btn:hover::before{
+  transform: translateX(220%) rotate(12deg);
 }
 
-.primary-btn:hover {
-  background-color: #3f4e9e; /* Darker blue color */
+.btn::after{
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 7px;
+  pointer-events: none;
+  box-shadow: inset 0 0 18px rgba(255,255,255,0.16), inset 0 0 2px rgba(255,255,255,0.35);
+  opacity: 0;
+  transition: opacity .25s ease;
 }
+
+.btn:hover::after{ opacity: 1; }
+
+.btn:active{
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}
+
+.btn:focus-visible{ outline: 2px solid rgba(255,255,255,0.5); outline-offset: 2px; }
+
+.primary-btn { /* keep class for semantic use */ }
 
 .secondary-btn {
   background-color: transparent;
@@ -166,9 +281,19 @@ a:hover::after {
   font-size: 1.85rem;
   text-transform: none;
   letter-spacing: -0.5px;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
   color: var(--text-color);
+  font-family: 'heroTitleFont', 'Comic Sans MS', 'Comic Neue', cursive;
+  text-shadow:
+    1px 1px 0 var(--comic-edge),
+    2px 2px 0 var(--comic-edge),
+    3px 3px 0 rgba(0,0,0,0.45),
+    4px 4px 0 rgba(0,0,0,0.35),
+    6px 6px 12px rgba(0,0,0,0.35);
+  transition: transform .15s ease;
 }
+
+.section-title:hover { transform: translateY(-1px); }
 
 .section-underline {
   height: 3px;
@@ -176,6 +301,7 @@ a:hover::after {
   background-color: rgba(92, 107, 192, 0.2);
   margin-bottom: 35px;
   animation: none;
+  display: none;
 }
 
 @keyframes gradientMove {
@@ -218,6 +344,4 @@ img {
 }
 
 /* Remove the subtle gradient overlay for dark theme */
-body.dark-theme .app-container::before {
-  display: none;
-}
+/* Dark theme uses lighter grid values via vars */

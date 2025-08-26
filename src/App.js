@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
 import AboutSection from "./components/AboutSection";
 import SkillsSection from "./components/SkillsSection";
+import ProjectsSection from "./components/ProjectsSection";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
 import "./App.css";
@@ -15,6 +16,9 @@ function App() {
         <HeroSection />
         <section id="about">
           <AboutSection />
+        </section>
+        <section id="projects">
+          <ProjectsSection />
         </section>
         <section id="skills">
           <SkillsSection />

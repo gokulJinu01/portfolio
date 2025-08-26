@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "../styles/HeroSection.css";
+// glaze removed
 import { FaGithub, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
 
 const HeroSection = () => {
@@ -49,7 +50,7 @@ const HeroSection = () => {
                 {["G", "O", "K", "U", "L"].map((letter, i) => (
                   <span 
                     key={i} 
-                    className="animate-letter" 
+                    className="animate-letter three-d-letter" 
                     ref={(el) => lettersRef.current[i] = el}
                   >
                     {letter}
@@ -64,7 +65,7 @@ const HeroSection = () => {
                 {["J", "I", "N", "U"].map((letter, i) => (
                   <span 
                     key={i + 5} 
-                    className="animate-letter" 
+                    className="animate-letter three-d-letter" 
                     ref={(el) => lettersRef.current[i + 5] = el}
                   >
                     {letter}
@@ -81,7 +82,7 @@ const HeroSection = () => {
                 {["G", "O", "K", "U", "L"].map((letter, i) => (
                   <span 
                     key={`mobile-${i}`} 
-                    className="animate-letter" 
+                    className="animate-letter three-d-letter" 
                   >
                     {letter}
                   </span>
@@ -98,7 +99,7 @@ const HeroSection = () => {
                 {["J", "I", "N", "U"].map((letter, i) => (
                   <span 
                     key={`mobile-${i + 5}`} 
-                    className="animate-letter" 
+                    className="animate-letter three-d-letter" 
                   >
                     {letter}
                   </span>

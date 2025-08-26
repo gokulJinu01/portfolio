@@ -17,7 +17,7 @@
   padding: 0 2rem;
   padding-top: 180px;
   padding-bottom: 0;
-  background-color: var(--background-color);
+  background-color: transparent; /* show global gradient */
   overflow: hidden;
 }
 
@@ -64,7 +64,42 @@
 
 .animate-letter:hover {
   transform: perspective(500px) translateZ(30px) rotateX(15deg);
-  color: #ff3333;
+  color: inherit;
+}
+
+/* 3D extruded effect for hero name */
+.three-d-letter {
+  /* subtle face highlight */
+  filter: saturate(1.05);
+  /* teal/blue extrusion to match card gradient */
+  text-shadow:
+    1px 1px 0 var(--contact-grad-b),
+    2px 2px 0 var(--contact-grad-b),
+    3px 3px 0 var(--contact-grad-b),
+    4px 4px 0 #2c4765,
+    5px 5px 0 #2c4765,
+    6px 6px 0 #253a53,
+    7px 7px 0 #1e2e42,
+    8px 8px 0 #1a2738,
+    9px 9px 0 #162133,
+    10px 10px 0 var(--contact-grad-a),
+    12px 12px 16px rgba(0,0,0,0.45);
+}
+
+/* stronger pop on hover/active */
+.three-d-letter:hover {
+  text-shadow:
+    1px 1px 0 #3f5f86,
+    2px 2px 0 #3f5f86,
+    3px 3px 0 #3f5f86,
+    4px 4px 0 #35577D,
+    5px 5px 0 #35577D,
+    6px 6px 0 #2c4765,
+    7px 7px 0 #253a53,
+    8px 8px 0 #1e2e42,
+    9px 9px 0 #1a2738,
+    10px 10px 0 #141E30,
+    14px 14px 22px rgba(0,0,0,0.5);
 }
 
 .hero-face {
@@ -124,29 +159,16 @@
 }
 
 .hero-cta .btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-  background-color: #3f4e9e;
+  /* use new global btn hover effects */
 }
 
 .btn-icon {
   margin-right: 8px;
   font-size: 0.9em;
   vertical-align: middle;
-  animation: bounce 2s infinite;
+  transition: transform .2s ease;
 }
-
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-6px);
-  }
-  60% {
-    transform: translateY(-3px);
-  }
-}
+.btn:hover .btn-icon { transform: translateY(-2px); }
 
 /* Desktop/Mobile Title Containers */
 .desktop-title-container {

@@ -35,7 +35,8 @@ const AboutSection = () => {
       observer.observe(sectionNode);
     }
     
-    featuresRef.current.forEach(feature => {
+    const features = [...featuresRef.current];
+    features.forEach(feature => {
       if (feature) {
         featuresObserver.observe(feature);
       }
@@ -46,7 +47,7 @@ const AboutSection = () => {
         observer.unobserve(sectionNode);
       }
       
-      featuresRef.current.forEach(feature => {
+      features.forEach(feature => {
         if (feature) {
           featuresObserver.unobserve(feature);
         }

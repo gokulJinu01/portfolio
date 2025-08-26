@@ -2,20 +2,15 @@ import React, { useState, useEffect } from "react";
 import "../styles/Navbar.css";
 
 const Navbar = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false); // Default to light mode
-  const [isRotating, setIsRotating] = useState(false); // State for rotation animation
+  const [isDarkMode] = useState(true); // Force dark mode
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [visible, setVisible] = useState(true); // Start with navbar visible
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Apply the theme class to body when isDarkMode changes
+  // Always apply dark theme to body
   useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.add('dark-theme');
-    } else {
-      document.body.classList.remove('dark-theme');
-    }
-  }, [isDarkMode]);
+    document.body.classList.add('dark-theme');
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,17 +26,6 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [prevScrollPos]);
-
-  const toggleTheme = () => {
-    if (isRotating) return; // Prevent toggling during rotation
-    setIsRotating(true); // Start rotation animation
-    
-    // Simply toggle the theme
-    setTimeout(() => {
-      setIsDarkMode(!isDarkMode);
-      setIsRotating(false); // End rotation animation
-    }, 500);
-  };
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -65,15 +49,7 @@ const Navbar = () => {
           <li><a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a></li>
         </ul>
         
-        <div className="theme-toggle">
-          <span
-            onClick={toggleTheme}
-            className={`theme-icon ${isRotating ? "rotating" : ""}`}
-            style={{ cursor: "pointer" }}
-          >
-            {isDarkMode ? "☀️" : "🌙"}
-          </span>
-        </div>
+        {/* Theme toggle removed: dark mode is always on */}
       </div>
     </nav>
   );

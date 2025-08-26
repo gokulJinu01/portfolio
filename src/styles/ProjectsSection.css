@@ -1,0 +1,61 @@
+.projects {
+  padding-top: 50px;
+  padding-bottom: 60px;
+  color: var(--text-color);
+}
+
+.projects-header { text-align: center; margin-bottom: 2rem; }
+.projects-intro { color: var(--text-light); }
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.project-card {
+  position: relative;
+  padding: 1.25rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--contact-grad-a), var(--contact-grad-b));
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.3);
+  transform: translateY(12px);
+  opacity: 0;
+  transition: transform .45s ease, opacity .45s ease, box-shadow .3s ease, border-color .3s ease;
+  overflow: hidden;
+}
+
+.project-card.visible { transform: translateY(0); opacity: 1; }
+.project-card:hover { box-shadow: 0 22px 40px rgba(0,0,0,0.28); border-color: rgba(255,255,255,0.1); }
+
+.project-sheen{
+  content: ""; position: absolute; inset: 0; pointer-events:none;
+  background: radial-gradient( 50% 60% at 10% 0%, rgba(255,255,255,.08), rgba(255,255,255,0) 60% );
+  opacity: 0; transition: opacity .3s ease;
+}
+.project-card:hover .project-sheen{ opacity: 1; }
+
+.project-title {
+  margin: 0 0 .25rem 0;
+  font-size: 1.1rem;
+  color: #f5f7fa;
+  font-family: 'heroTitleFont', 'Comic Sans MS', 'Comic Neue', cursive;
+  text-shadow:
+    1px 1px 0 rgba(0,0,0,0.55),
+    2px 2px 0 rgba(0,0,0,0.4);
+}
+.project-desc { margin: 0 0 .75rem 0; color: var(--text-light); font-size: .95rem; display:-webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+.project-tags { list-style: none; display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 .75rem 0; padding: 0; }
+.tag { padding: 4px 8px; border-radius: 999px; font-size: .8rem; color: var(--text-color);
+  background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.06);
+}
+
+.project-links { display:flex; gap:.75rem; }
+.project-link { display:inline-flex; align-items:center; gap:.4rem; font-size:.9rem; color: var(--text-color); opacity:.9; }
+.project-link:hover { opacity: 1; color: var(--primary-color); }
+
+/* With a single project, keep it centered; easy to expand later */
