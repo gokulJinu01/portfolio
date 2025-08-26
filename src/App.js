@@ -1,5 +1,4 @@
-import React from "react";
-import Navbar from "./components/Navbar";
+import React, { useEffect } from "react";
 import HeroSection from "./components/HeroSection";
 import AboutSection from "./components/AboutSection";
 import SkillsSection from "./components/SkillsSection";
@@ -9,9 +8,13 @@ import Footer from "./components/Footer";
 import "./App.css";
 
 function App() {
+  // Ensure dark theme is applied even without Navbar
+  useEffect(() => {
+    document.body.classList.add('dark-theme');
+    return () => document.body.classList.remove('dark-theme');
+  }, []);
   return (
     <div className="app-container">
-      <Navbar />
       <main>
         <HeroSection />
         <section id="about">
