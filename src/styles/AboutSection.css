@@ -752,6 +752,12 @@
 }
 
 @media (max-width: 768px) {
+  .about-education {
+    padding: 2rem 1rem;
+    margin-left: 0;
+    width: 100%;
+  }
+  
   .about-education,
   .about-achievements {
     margin-top: 2rem;
@@ -765,20 +771,35 @@
     left: 2rem;
   }
   
+  .achievement-card {
+    margin-right: 0;
+    margin-left: 0;
+    padding: 1.5rem;
+  }
+  
+  .achievement-card-reverse,
+  .achievement-card-normal {
+    flex-direction: column !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
   .achievement-card:nth-child(odd),
   .achievement-card:nth-child(even) {
     margin-left: 0;
     margin-right: 0;
-    padding-left: 4rem;
-    padding-right: 2rem;
-    flex-direction: row;
+    padding-left: 0;
+    padding-right: 0;
+    flex-direction: column;
   }
   
   
   .education-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
-    gap: 1.5rem;
+    gap: 1rem;
   }
   
   .education-main {
@@ -809,6 +830,12 @@
 }
 
 @media (max-width: 480px) {
+  .about-education {
+    padding: 1.5rem 0.5rem;
+    margin-left: 0;
+    width: 100%;
+  }
+  
   .about-education,
   .about-achievements {
     margin-top: 1.5rem;

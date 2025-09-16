@@ -159,6 +159,7 @@
 @media (max-width: 768px) {
   .skills-categories { 
     gap: 1.5rem;
+    padding: 0 1rem;
   }
   
   .category-title {
@@ -361,7 +362,10 @@
     padding-bottom: 60px;
   }
 
-  .skills-categories { grid-template-columns: 1fr; gap: 1rem; }
+  .skills-categories { 
+    gap: 1rem; 
+    padding: 0 1rem;
+  }
   
   .skill-text, .skill-text-fill {
     font-size: 16px;
@@ -383,7 +387,10 @@
     gap: 2rem;
   }
   
-  .skills-categories { grid-template-columns: 1fr; }
+  .skills-categories { 
+    gap: 1rem;
+    padding: 0 0.5rem;
+  }
   
   .skill-text, .skill-text-fill {
     font-size: 17px;

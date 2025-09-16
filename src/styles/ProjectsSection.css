@@ -246,6 +246,15 @@
   .project-desc {
     font-size: 0.95rem;
   }
+  
+  .project-tags {
+    gap: 0.4rem;
+  }
+  
+  .tag {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+  }
 }
 
 @media (max-width: 480px) {
