@@ -161,6 +161,7 @@ body.theme-transition::before {
     background-attachment: scroll, scroll, scroll, scroll, scroll;
   }
   body::before { display: none; }
+  html, body { overflow-x: hidden; }
 }
 
 /* Respect reduced motion: soften transitions/animations */

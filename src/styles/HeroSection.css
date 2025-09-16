@@ -202,7 +202,7 @@
 
 @media (max-width: 768px) {
   .title {
-    font-size: 10.125rem;
+    font-size: clamp(5rem, 13vw, 10.125rem);
   }
   
   .hero-subtitle {
@@ -238,7 +238,7 @@
   }
   
   .title {
-    font-size: 7rem;
+    font-size: clamp(3rem, 18vw, 7rem);
     line-height: 1;
     margin: 0;
   }
