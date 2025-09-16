@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/ContactForm.css";
 import { FaEnvelope, FaGithub, FaLinkedinIn, FaMapMarkerAlt, FaPaperPlane, FaSpinner, FaCheck, FaInstagram } from 'react-icons/fa';
+import emailjs from '@emailjs/browser';
 
 const ContactForm = () => {
   const [formState, setFormState] = useState({
@@ -11,7 +12,9 @@ const ContactForm = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
   const sectionRef = useRef(null);
+  const formRef = useRef(null);
   
   useEffect(() => {
     const sectionNode = sectionRef.current;
@@ -90,23 +93,40 @@ const ContactForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(false);
     
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-      
-      // Reset form after showing success message
-      setTimeout(() => {
-        setIsSubmitted(false);
-        setFormState({
-          name: '',
-          email: '',
-          subject: '',
-          message: ''
-        });
-      }, 3000);
-    }, 1500);
+    // EmailJS configuration
+    const serviceId = 'service_aswwbfn';
+    const templateId = 'template_gwe0iwh';
+    const publicKey = 'nA45RNzSyaNMH7WjZ';
+    
+    // Send email using EmailJS
+    emailjs.sendForm(serviceId, templateId, formRef.current, publicKey)
+      .then((result) => {
+        console.log('Email sent successfully!', result.text);
+        setIsSubmitting(false);
+        setIsSubmitted(true);
+        
+        // Reset form after showing success message
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setFormState({
+            name: '',
+            email: '',
+            subject: '',
+            message: ''
+          });
+        }, 3000);
+      }, (error) => {
+        console.log('Failed to send email:', error.text);
+        setIsSubmitting(false);
+        setSubmitError(true);
+        
+        // Hide error message after 5 seconds
+        setTimeout(() => {
+          setSubmitError(false);
+        }, 5000);
+      });
   };
 
   // Split the title into individual characters for animation
@@ -177,7 +197,7 @@ const ContactForm = () => {
                 <p>Thank you for reaching out. I'll get back to you as soon as possible.</p>
               </div>
             ) : (
-              <form className="contact-form" onSubmit={handleSubmit}>
+              <form className="contact-form" ref={formRef} onSubmit={handleSubmit}>
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="name">Name</label>
@@ -240,6 +260,11 @@ const ContactForm = () => {
                     </>
                   )}
                 </button>
+                {submitError && (
+                  <div className="error-message">
+                    <p>Failed to send message. Please try again or contact me directly at gokuljinu12@gmail.com</p>
+                  </div>
+                )}
               </form>
             )}
           </div>

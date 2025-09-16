@@ -119,6 +119,8 @@ const HeroSection = () => {
           
           <div className="hero-cta">
             <a href="#contact" className="btn primary-btn">Contact Me</a>
+            <a href="/ResumeSept152025.html" className="btn secondary-btn" target="_blank" rel="noopener noreferrer">Preview Resume</a>
+            <a href="/Gokul_Jinu_Resume_BW.pdf" className="btn secondary-btn" download>Download</a>
           </div>
         </div>
       </div>

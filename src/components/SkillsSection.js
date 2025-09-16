@@ -14,9 +14,10 @@ import {
   SiMinio,
   SiDocker,
   SiPrometheus,
-  SiGrafana
+  SiGrafana,
+  SiJaeger
 } from 'react-icons/si';
-import { FaNetworkWired, FaShieldAlt, FaTachometerAlt, FaCode } from 'react-icons/fa';
+import { FaNetworkWired, FaShieldAlt, FaTachometerAlt, FaCode, FaLock, FaCogs, FaChartLine } from 'react-icons/fa';
 
 const SkillsSection = () => {
   const sectionRef = useRef(null);
@@ -24,41 +25,33 @@ const SkillsSection = () => {
 
   const categories = [
     {
-      title: 'Core Stack',
+      title: 'Languages & Frameworks',
       items: [
-        { name: 'Go', Icon: SiGo, tip: 'Go — concurrency with goroutines & channels' },
-        { name: 'Java (Spring Boot)', Icon: SiSpring, tip: 'Spring Boot — production-ready microservices' },
-        { name: 'TypeScript', Icon: SiTypescript, tip: 'Type-safe frontends & services' },
-        { name: 'Python', Icon: SiPython, tip: 'Python — data tooling & services' },
+        { name: 'Go', Icon: SiGo },
+        { name: 'Java/Spring', Icon: SiSpring },
+        { name: 'TypeScript', Icon: SiTypescript },
+        { name: 'Python/FastAPI', Icon: SiFastapi },
+        { name: 'React/Next.js', Icon: SiNextdotjs },
       ],
     },
     {
-      title: 'Runtime & RPC',
+      title: 'Infrastructure & Data',
       items: [
-        { name: 'Next.js', Icon: SiNextdotjs, tip: 'Next.js — SSR/ISR & app router' },
-        { name: 'React', Icon: SiReact, tip: 'React — component-driven UIs' },
-        { name: 'Angular', Icon: SiAngular, tip: 'Angular — enterprise frontends' },
-        { name: 'gRPC', Icon: FaNetworkWired, tip: 'gRPC — bidi streams with deadlines' },
-        { name: 'FastAPI', Icon: SiFastapi, tip: 'FastAPI — high‑perf Python services' },
+        { name: 'Docker', Icon: SiDocker },
+        { name: 'MongoDB', Icon: SiMongodb },
+        { name: 'Redis', Icon: SiRedis },
+        { name: 'MinIO/S3', Icon: SiMinio },
+        { name: 'gRPC', Icon: FaNetworkWired },
       ],
     },
     {
-      title: 'Data & Infra',
+      title: 'Observability & Security',
       items: [
-        { name: 'MongoDB', Icon: SiMongodb, tip: 'MongoDB — flexible document storage' },
-        { name: 'Redis', Icon: SiRedis, tip: 'Redis — caching & rate limits' },
-        { name: 'MinIO', Icon: SiMinio, tip: 'MinIO — S3‑compatible storage' },
-        { name: 'Docker', Icon: SiDocker, tip: 'Docker/Compose — containerized runtime' },
-      ],
-    },
-    {
-      title: 'Reliability & Security',
-      items: [
-        { name: 'Prometheus', Icon: SiPrometheus, tip: 'Prometheus — metrics & alerts' },
-        { name: 'Grafana', Icon: SiGrafana, tip: 'Grafana — unified observability' },
-        { name: 'TLS/mTLS', Icon: FaShieldAlt, tip: 'TLS/mTLS — service identity & encryption' },
-        { name: 'Rate limiting', Icon: FaTachometerAlt, tip: 'Rate limiting — abuse control & fairness' },
-        // Optionally add Jaeger, Circuit breakers, etc. into the overflow
+        { name: 'Prometheus', Icon: SiPrometheus },
+        { name: 'Grafana', Icon: SiGrafana },
+        { name: 'Jaeger', Icon: SiJaeger },
+        { name: 'TLS/mTLS', Icon: FaShieldAlt },
+        { name: 'JWT/Auth', Icon: FaLock },
       ],
     },
   ];
@@ -108,7 +101,7 @@ const SkillsSection = () => {
                     key={`${ci}-${si}`}
                     ref={el => { if (el) skillRefs.current.push(el); }}
                   >
-                    <span className="skill-badge-inner" title={item.tip || item.name}>
+                    <span className="skill-badge-inner">
                       {item.Icon ? <item.Icon className="skill-icon" aria-hidden /> : <FaCode className="skill-icon" aria-hidden />}
                       <span className="skill-name" aria-label={item.name}>{item.name}</span>
                     </span>
