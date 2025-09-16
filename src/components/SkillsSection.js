@@ -4,9 +4,6 @@ import {
   SiGo,
   SiTypescript,
   SiSpring,
-  SiPython,
-  SiReact,
-  SiAngular,
   SiNextdotjs,
   SiFastapi,
   SiMongodb,
@@ -17,7 +14,7 @@ import {
   SiGrafana,
   SiJaeger
 } from 'react-icons/si';
-import { FaNetworkWired, FaShieldAlt, FaTachometerAlt, FaCode, FaLock, FaCogs, FaChartLine } from 'react-icons/fa';
+import { FaNetworkWired, FaShieldAlt, FaCode, FaLock } from 'react-icons/fa';
 
 const SkillsSection = () => {
   const sectionRef = useRef(null);
