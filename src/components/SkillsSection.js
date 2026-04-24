@@ -1,117 +1,50 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import "../styles/SkillsSection.css";
-import {
-  SiGo,
-  SiTypescript,
-  SiSpring,
-  SiNextdotjs,
-  SiFastapi,
-  SiMongodb,
-  SiRedis,
-  SiMinio,
-  SiDocker,
-  SiPrometheus,
-  SiGrafana,
-  SiJaeger
-} from 'react-icons/si';
-import { FaNetworkWired, FaShieldAlt, FaCode, FaLock } from 'react-icons/fa';
+import SecHead from "./SecHead";
+
+const CATS = [
+  {
+    n: "/A",
+    label: "LANGUAGES · FRAMEWORKS",
+    items: ["Go", "Java · Spring", "TypeScript", "Python · FastAPI", "React · Next.js"],
+  },
+  {
+    n: "/B",
+    label: "INFRASTRUCTURE · DATA",
+    items: ["Docker", "MongoDB", "Redis", "MinIO · S3", "gRPC"],
+  },
+  {
+    n: "/C",
+    label: "OBSERVABILITY · SECURITY",
+    items: ["Prometheus", "Grafana", "Jaeger", "TLS · mTLS", "JWT · Auth"],
+  },
+];
 
 const SkillsSection = () => {
-  const sectionRef = useRef(null);
-  const skillRefs = useRef([]);
-
-  const categories = [
-    {
-      title: 'Languages & Frameworks',
-      items: [
-        { name: 'Go', Icon: SiGo },
-        { name: 'Java/Spring', Icon: SiSpring },
-        { name: 'TypeScript', Icon: SiTypescript },
-        { name: 'Python/FastAPI', Icon: SiFastapi },
-        { name: 'React/Next.js', Icon: SiNextdotjs },
-      ],
-    },
-    {
-      title: 'Infrastructure & Data',
-      items: [
-        { name: 'Docker', Icon: SiDocker },
-        { name: 'MongoDB', Icon: SiMongodb },
-        { name: 'Redis', Icon: SiRedis },
-        { name: 'MinIO/S3', Icon: SiMinio },
-        { name: 'gRPC', Icon: FaNetworkWired },
-      ],
-    },
-    {
-      title: 'Observability & Security',
-      items: [
-        { name: 'Prometheus', Icon: SiPrometheus },
-        { name: 'Grafana', Icon: SiGrafana },
-        { name: 'Jaeger', Icon: SiJaeger },
-        { name: 'TLS/mTLS', Icon: FaShieldAlt },
-        { name: 'JWT/Auth', Icon: FaLock },
-      ],
-    },
-  ];
-  
-  useEffect(() => {
-    const sectionNode = sectionRef.current;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('fade-in-section');
-          skillRefs.current.forEach((ref, i) => {
-            if (ref) setTimeout(() => ref.classList.add('skill-visible'), 90 * i);
-          });
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    if (sectionNode) observer.observe(sectionNode);
-    return () => { if (sectionNode) observer.unobserve(sectionNode); };
-  }, []);
-  
-  // proficiency dots removed per request
-  
-  // Show all items (no "Show more" control)
-
-  // reset refs list to avoid accumulation across re-renders
-  skillRefs.current = [];
-
   return (
-    <section className="skills" ref={sectionRef} id="skills">
-      <div className="container">
-        <div className="skills-header">
-          <h2 className="section-title">Skills</h2>
-          <div className="section-underline"></div>
-          {/* subtitle removed per request */}
-        </div>
+    <section id="skills" className="sec3d skills3d">
+      <SecHead num="03" title="SKILLS" kicker="What I reach for" />
 
-        <div className="skills-categories">
-          {categories.map((cat, ci) => (
-            <div className="skills-category" key={ci}>
-              <h3 className="category-title">{cat.title}</h3>
-              <ul className="category-list">
-                {cat.items.map((item, si) => (
-                  <li
-                    className="skill-badge"
-                    key={`${ci}-${si}`}
-                    ref={el => { if (el) skillRefs.current.push(el); }}
-                  >
-                    <span className="skill-badge-inner">
-                      {item.Icon ? <item.Icon className="skill-icon" aria-hidden /> : <FaCode className="skill-icon" aria-hidden />}
-                      <span className="skill-name" aria-label={item.name}>{item.name}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
+      <div className="skills3d-grid">
+        {CATS.map((c) => (
+          <div className="skills3d-cat" key={c.n}>
+            <div className="skills3d-cat-head">
+              <span className="mono skills3d-n">{c.n}</span>
+              <span className="mono skills3d-label">{c.label}</span>
             </div>
-          ))}
-        </div>
-        {/* proof and show more removed */}
+            <ul>
+              {c.items.map((i) => (
+                <li key={i} className="skill3d-chip">
+                  <span className="chip-face">{i}</span>
+                  <span className="chip-side" />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </section>
   );
 };
 
-export default SkillsSection; 
+export default SkillsSection;

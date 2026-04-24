@@ -1,56 +1,57 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/Navbar.css";
 
-const Navbar = () => {
-  const [isDarkMode] = useState(true); // Force dark mode
-  const [prevScrollPos, setPrevScrollPos] = useState(0);
-  const [visible, setVisible] = useState(true); // Start with navbar visible
-  const [menuOpen, setMenuOpen] = useState(false);
+const ITEMS = [
+  ["#home", "HOME"],
+  ["#about", "ABOUT"],
+  ["#works", "WORKS"],
+  ["#skills", "SKILLS"],
+  ["#contact", "CONTACT"],
+];
 
-  // Always apply dark theme to body
+const Navbar = () => {
+  const [hash, setHash] = useState(
+    typeof window !== "undefined" && window.location.hash ? window.location.hash : "#home"
+  );
+  const [open, setOpen] = useState(false);
+
   useEffect(() => {
-    document.body.classList.add('dark-theme');
+    const onHash = () => setHash(window.location.hash || "#home");
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollPos = window.pageYOffset;
-      
-      // Hide when scrolling down, show when scrolling up
-      const shouldBeVisible = prevScrollPos > currentScrollPos || currentScrollPos < 50;
-      
-      setPrevScrollPos(currentScrollPos);
-      setVisible(shouldBeVisible);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [prevScrollPos]);
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
+  const pick = (h) => { setHash(h); setOpen(false); };
 
   return (
-    <nav className={`navbar ${visible ? 'navbar-visible' : 'navbar-hidden'} ${isDarkMode ? 'dark-theme' : ''}`}>
-      <div className="nav-logo">
-        <a href="#home">GJ</a>
+    <nav className="nav3d" aria-label="Primary">
+      <a href="#home" className="nav3d-logo" onClick={() => pick("#home")}>
+        <span className="nav3d-logo-face">GJ</span>
+        <span className="nav3d-logo-side" />
+      </a>
+      <div className={"nav3d-items" + (open ? " is-open" : "")}>
+        {ITEMS.map(([h, l]) => (
+          <a
+            key={h}
+            href={h}
+            className={"nav3d-item" + (hash === h ? " is-active" : "")}
+            onClick={() => pick(h)}
+          >
+            {l}
+          </a>
+        ))}
       </div>
-      
-      <div className="nav-content">
-        <button className="menu-toggle" onClick={toggleMenu}>
-          {menuOpen ? "✕" : "☰"}
-        </button>
-        
-        <ul className={`nav-links ${menuOpen ? 'active' : ''}`}>
-          <li><a href="#home" onClick={() => setMenuOpen(false)}>Home</a></li>
-          <li><a href="#about" onClick={() => setMenuOpen(false)}>About</a></li>
-          <li><a href="#skills" onClick={() => setMenuOpen(false)}>Skills</a></li>
-          <li><a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a></li>
-        </ul>
-        
-        {/* Theme toggle removed: dark mode is always on */}
+      <div className="nav3d-right mono">
+        <span className="nav3d-dot" /> 43.65°N · 79.38°W
       </div>
+      <button
+        className="nav3d-burger"
+        onClick={() => setOpen((v) => !v)}
+        aria-label="Toggle menu"
+        aria-expanded={open}
+      >
+        {open ? "✕" : "☰"}
+      </button>
     </nav>
   );
 };
