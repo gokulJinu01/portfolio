@@ -24,9 +24,7 @@ const Navbar = () => {
   // Scroll-spy: pick the section closest to the top of the viewport
   useEffect(() => {
     const ids = ITEMS.map(([h]) => h.slice(1));
-    let ticking = false;
     const update = () => {
-      ticking = false;
       const probe = window.innerHeight * 0.35;
       let bestId = ids[0];
       let bestDist = Infinity;

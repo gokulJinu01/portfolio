@@ -99,7 +99,7 @@ function HeroModel() {
     });
 
     return meshes;
-  }, [scene, viewport.width]);
+  }, [scene, viewport.width, viewport.height]);
 
   React.useEffect(() => {
     const onMove = (e) => {
