@@ -1,166 +1,205 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useRef, useMemo } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useGLTF, ContactShadows } from "@react-three/drei";
+import * as THREE from "three";
 import "../styles/HeroSection.css";
 
-const TWEAKS = {
-  depth: 18,
-  parallax: 18,
-  faceColor: "#f3f5f8",
-  sideColor: "#35577D",
-  shadowColor: "#0d1a28",
-  accentA: "#6aa9ff",
-  accentB: "#ff9566",
-};
+function HeroModel() {
+  const group = useRef();
+  const target = useRef({ x: 0, y: 0 });
+  const mouseNDC = useRef({ x: 9999, y: 9999, active: false });
+  const { scene } = useGLTF("/hero.glb");
+  const { viewport } = useThree();
 
-function parseHex(h) {
-  if (h.startsWith("rgb")) {
-    const m = h.match(/\d+/g).map(Number);
-    return [m[0], m[1], m[2]];
-  }
-  const s = h.replace("#", "");
-  return [parseInt(s.slice(0, 2), 16), parseInt(s.slice(2, 4), 16), parseInt(s.slice(4, 6), 16)];
-}
-function mixColor(a, b, t) {
-  const pa = parseHex(a), pb = parseHex(b);
-  const r = Math.round(pa[0] + (pb[0] - pa[0]) * t);
-  const g = Math.round(pa[1] + (pb[1] - pa[1]) * t);
-  const bl = Math.round(pa[2] + (pb[2] - pa[2]) * t);
-  return `rgb(${r}, ${g}, ${bl})`;
-}
+  const letters = useMemo(() => {
+    const meshes = [];
+    scene.traverse((c) => {
+      if (c.isMesh) meshes.push(c);
+    });
 
-function Extruded3DLetter({ ch, depth, face, side, shadow, style }) {
-  const layers = [];
-  for (let i = 0; i < depth; i++) {
-    const t = i / Math.max(1, depth - 1);
-    const c = i === 0 ? face : mixColor(side, shadow, t);
-    layers.push(
-      <span
-        key={i}
-        className="ex3d-layer"
-        aria-hidden={i !== 0}
-        style={{
-          transform: `translateZ(${-i}px)`,
-          color: c,
-          WebkitTextStroke: i === 0 ? "0.5px rgba(0,0,0,0.25)" : "none",
-        }}
-      >
-        {ch}
-      </span>
-    );
-  }
-  return (
-    <span className="ex3d-letter" style={style}>
-      <span className="ex3d-stack">{layers}</span>
-    </span>
-  );
-}
+    // Reset before measuring
+    scene.scale.setScalar(1);
+    scene.position.set(0, 0, 0);
+    meshes.forEach((m) => {
+      m.position.set(m.userData.origX ?? m.position.x, m.userData.origY ?? m.position.y, m.userData.origZ ?? m.position.z);
+      if (m.userData.origX === undefined) {
+        m.userData.origX = m.position.x;
+        m.userData.origY = m.position.y;
+        m.userData.origZ = m.position.z;
+      }
+    });
+    scene.updateMatrixWorld(true);
 
-const HeroSection = () => {
-  const stageRef = useRef(null);
-  const nameRef = useRef(null);
-  const [rot, setRot] = useState({ x: -8, y: -14 });
-  const [idle, setIdle] = useState(true);
-  const mouseRef = useRef({ x: -14, y: -8 });
-  const autoRef = useRef(0);
-  const rafRef = useRef(0);
+    // Detect narrow viewport — break the name onto two lines
+    const isNarrow = viewport.width < 9;
 
-  // parallax + idle sway
-  useEffect(() => {
-    const onMove = (e) => {
-      const el = stageRef.current;
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      const nx = ((e.clientX - r.left) / r.width) * 2 - 1;
-      const ny = ((e.clientY - r.top) / r.height) * 2 - 1;
-      mouseRef.current = {
-        x: -ny * TWEAKS.parallax,
-        y: nx * TWEAKS.parallax * 1.2,
+    if (isNarrow) {
+      // Sort meshes left-to-right by original X so we can split GOKUL / JINU
+      const ordered = [...meshes].sort((a, b) => a.userData.origX - b.userData.origX);
+      const gokul = ordered.slice(0, 5);
+      const jinu = ordered.slice(5);
+      const reposition = (group, yOffset) => {
+        const xs = group.map((m) => m.userData.origX);
+        const mid = (Math.min(...xs) + Math.max(...xs)) / 2;
+        group.forEach((m) => {
+          m.position.x = m.userData.origX - mid;
+          m.position.y = m.userData.origY + yOffset;
+        });
       };
-      setIdle(false);
-    };
-    const onLeave = () => setIdle(true);
-    window.addEventListener("mousemove", onMove);
-    const el = stageRef.current;
-    if (el) el.addEventListener("mouseleave", onLeave);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      if (el) el.removeEventListener("mouseleave", onLeave);
-    };
-  }, []);
-
-  useEffect(() => {
-    let last = performance.now();
-    const loop = (now) => {
-      const dt = (now - last) / 1000;
-      last = now;
-      autoRef.current += dt;
-      const amp = idle ? 1 : 0.35;
-      const autoX = Math.sin(autoRef.current * 0.55) * 5 * amp - (idle ? 6 : 0);
-      const autoY = Math.cos(autoRef.current * 0.4) * 9 * amp - (idle ? 8 : 0);
-      const targetX = idle ? autoX : mouseRef.current.x + autoX;
-      const targetY = idle ? autoY : mouseRef.current.y + autoY;
-      setRot((prev) => ({
-        x: prev.x + (targetX - prev.x) * 0.08,
-        y: prev.y + (targetY - prev.y) * 0.08,
-      }));
-      rafRef.current = requestAnimationFrame(loop);
-    };
-    rafRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [idle]);
-
-  // magnetic repel on letters
-  useEffect(() => {
-    const root = nameRef.current;
-    if (!root) return;
-    let raf = 0;
-    let mx = -9999, my = -9999;
-    const apply = () => {
-      raf = 0;
-      const letters = root.querySelectorAll(".ex3d-letter");
-      const radius = 180;
-      const strength = 42;
-      letters.forEach((el) => {
-        const r = el.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        const dx = cx - mx;
-        const dy = cy - my;
-        const dist = Math.hypot(dx, dy);
-        if (dist < radius && dist > 0.001) {
-          const f = 1 - dist / radius;
-          const falloff = f * f;
-          const nx = dx / dist;
-          const ny = dy / dist;
-          el.style.setProperty("--mag-x", `${nx * strength * falloff}px`);
-          el.style.setProperty("--mag-y", `${ny * strength * falloff * 0.7}px`);
-          el.style.setProperty("--mag-z", `${falloff * 30}px`);
-          el.style.setProperty("--mag-r", `${nx * falloff * 8}deg`);
-        } else {
-          el.style.setProperty("--mag-x", "0px");
-          el.style.setProperty("--mag-y", "0px");
-          el.style.setProperty("--mag-z", "0px");
-          el.style.setProperty("--mag-r", "0deg");
-        }
+      reposition(gokul, 1.6);
+      jinu.forEach((m, i) => {
+        // JINU is naturally a bit narrower; tighten spacing slightly
+        m.position.x = m.userData.origX - ((jinu[0].userData.origX + jinu[jinu.length - 1].userData.origX) / 2);
+        m.position.y = m.userData.origY - 1.6;
       });
+    }
+
+    scene.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(scene);
+    const sz = box.getSize(new THREE.Vector3());
+    const ctr = box.getCenter(new THREE.Vector3());
+    // Fit by whichever dimension is more constrained
+    const aspect = viewport.width / Math.max(viewport.height, 0.01);
+    const fitByX = (viewport.width * 0.92) / sz.x;
+    const fitByY = (viewport.height * 0.85) / sz.y;
+    const desired = isNarrow ? Math.min(fitByX, fitByY) : Math.min(11 / sz.x, fitByX);
+    const s = Math.max(0.1, Math.min(desired, 1.6));
+    scene.scale.setScalar(s);
+    scene.position.set(-ctr.x * s, -ctr.y * s, 0);
+    scene.updateMatrixWorld(true);
+    void aspect;
+
+    const mat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color("#e6ecf2"),
+      metalness: 0.3,
+      roughness: 0.3,
+      clearcoat: 0.45,
+      clearcoatRoughness: 0.3,
+    });
+
+    meshes.forEach((m) => {
+      m.material = mat;
+      m.castShadow = true;
+      m.receiveShadow = true;
+
+      m.geometry.computeBoundingBox();
+      const wc = m.geometry.boundingBox
+        .getCenter(new THREE.Vector3())
+        .applyMatrix4(m.matrixWorld);
+      m.userData.worldCenter = wc;
+      m.userData.baseX = m.position.x;
+      m.userData.baseY = m.position.y;
+      m.userData.baseZ = m.position.z;
+    });
+
+    meshes.sort((a, b) => a.userData.worldCenter.x - b.userData.worldCenter.x);
+    meshes.forEach((m, i) => {
+      m.userData.phase = i * 0.55;
+      m.userData.amp = 0.85 + (i % 3) * 0.12;
+    });
+
+    return meshes;
+  }, [scene, viewport.width]);
+
+  React.useEffect(() => {
+    const onMove = (e) => {
+      const canvasEl = document.querySelector(".hero3d-canvas-wrap canvas");
+      if (!canvasEl) return;
+      const r = canvasEl.getBoundingClientRect();
+      const inside =
+        e.clientX >= r.left && e.clientX <= r.right &&
+        e.clientY >= r.top && e.clientY <= r.bottom;
+      mouseNDC.current.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+      mouseNDC.current.y = -(((e.clientY - r.top) / r.height) * 2 - 1);
+      mouseNDC.current.active = inside;
+
+      const nx = (e.clientX / window.innerWidth) * 2 - 1;
+      const ny = (e.clientY / window.innerHeight) * 2 - 1;
+      target.current.x = nx * 0.35;
+      target.current.y = ny * 0.2;
     };
-    const onMove = (e) => { mx = e.clientX; my = e.clientY; if (!raf) raf = requestAnimationFrame(apply); };
-    const onLeave = () => { mx = -9999; my = -9999; if (!raf) raf = requestAnimationFrame(apply); };
+    const onLeave = () => { mouseNDC.current.active = false; };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseleave", onLeave);
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
-      if (raf) cancelAnimationFrame(raf);
     };
   }, []);
 
-  const fullName = [..."GOKUL".split(""), " ", ..."JINU".split("")];
+  const raycaster = useMemo(() => new THREE.Raycaster(), []);
+  const planeZ = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), []);
+  const mouseWorld = useMemo(() => new THREE.Vector3(9999, 9999, 0), []);
+
+  useFrame((state) => {
+    if (!group.current) return;
+    const t = state.clock.elapsedTime;
+
+    const idleY = Math.sin(t * 0.55) * 0.08;
+    const idleX = Math.cos(t * 0.4) * 0.05;
+
+    group.current.rotation.y += (target.current.x + idleY - group.current.rotation.y) * 0.05;
+    group.current.rotation.x += (target.current.y + idleX - group.current.rotation.x) * 0.05;
+
+    if (mouseNDC.current.active) {
+      raycaster.setFromCamera({ x: mouseNDC.current.x, y: mouseNDC.current.y }, state.camera);
+      raycaster.ray.intersectPlane(planeZ, mouseWorld);
+    } else {
+      mouseWorld.set(9999, 9999, 0);
+    }
+
+    const radius = 2.6;
+    const strength = 1.4;
+
+    letters.forEach((m) => {
+      const lt = t + m.userData.phase;
+      const bobY = Math.sin(lt * 1.2) * 0.18 * m.userData.amp;
+      const bobZ = Math.cos(lt * 0.8) * 0.14 * m.userData.amp;
+
+      const wc = m.userData.worldCenter;
+      const dx = wc.x - mouseWorld.x;
+      const dy = wc.y - mouseWorld.y;
+      const dist = Math.hypot(dx, dy);
+
+      let rx = 0, ry = 0, rz = 0, rr = 0;
+      if (mouseNDC.current.active && dist < radius && dist > 0.001) {
+        const f = 1 - dist / radius;
+        const fo = f * f;
+        const nx = dx / dist;
+        const ny = dy / dist;
+        rx = nx * strength * fo;
+        ry = ny * strength * fo * 0.5;
+        rz = fo * 1.3;
+        rr = nx * fo * 0.5;
+      }
+
+      const tx = m.userData.baseX + rx;
+      const ty = m.userData.baseY + bobY + ry;
+      const tz = m.userData.baseZ + bobZ + rz;
+
+      m.position.x += (tx - m.position.x) * 0.2;
+      m.position.y += (ty - m.position.y) * 0.2;
+      m.position.z += (tz - m.position.z) * 0.2;
+      m.rotation.z += (Math.sin(lt * 0.9) * 0.08 + rr - m.rotation.z) * 0.2;
+      m.rotation.y += (Math.cos(lt * 0.7) * 0.12 - m.rotation.y) * 0.2;
+    });
+  });
 
   return (
-    <section id="home" className="hero3d" ref={stageRef}>
+    <group ref={group}>
+      <primitive object={scene} />
+    </group>
+  );
+}
+
+useGLTF.preload("/hero.glb");
+
+const HeroSection = () => {
+  return (
+    <section id="home" className="hero3d">
       <div className="hero3d-bg">
         <div className="hero3d-grid" />
-        <div className="hero3d-glow" style={{ "--a": TWEAKS.accentA, "--b": TWEAKS.accentB }} />
+        <div className="hero3d-glow" style={{ "--a": "#6aa9ff", "--b": "#ff9566" }} />
         <div className="hero3d-scanlines" />
       </div>
 
@@ -174,34 +213,30 @@ const HeroSection = () => {
         </div>
       </div>
 
-      <div
-        className="hero3d-scene"
-        style={{
-          "--rx": `${rot.x}deg`,
-          "--ry": `${rot.y}deg`,
-          "--depth": `${TWEAKS.depth}px`,
-        }}
-      >
-        <div className="hero3d-name" ref={nameRef}>
-          <h1 className="hero3d-line">
-            {fullName.map((c, i) =>
-              c === " " ? (
-                <span key={"sp" + i} className="hero3d-gap">&nbsp;</span>
-              ) : (
-                <Extruded3DLetter
-                  key={"n" + i}
-                  ch={c}
-                  depth={TWEAKS.depth}
-                  face={TWEAKS.faceColor}
-                  side={TWEAKS.sideColor}
-                  shadow={TWEAKS.shadowColor}
-                  style={{ animationDelay: `${i * 90}ms` }}
-                />
-              )
-            )}
-          </h1>
-        </div>
-        <div className="hero3d-floor" />
+      <div className="hero3d-canvas-wrap">
+        <Canvas
+          camera={{ position: [0, 0, 8], fov: 38 }}
+          dpr={[1, 2]}
+          gl={{ antialias: true, alpha: true }}
+          shadows
+        >
+          {/* low ambient — keep shadows deep for max contrast */}
+          <ambientLight intensity={0.08} color="#1a3550" />
+          {/* bright cool key from upper-left — main illumination on the faces */}
+          <directionalLight position={[-5, 6, 5]} intensity={2.6} color="#9cd0ff" castShadow />
+          {/* hot orange rim from right edge — the "pop" against the cold bg */}
+          <directionalLight position={[7, 1, -2]} intensity={2.4} color="#ff7a2e" />
+          {/* cyan back-rim on the left edge for color separation & depth */}
+          <directionalLight position={[-7, 2, -3]} intensity={1.3} color="#5fe0ff" />
+          {/* tight white top sparkle for crisp highlights */}
+          <spotLight position={[0, 10, 4]} angle={0.35} penumbra={0.5} intensity={2.2} color="#ffffff" />
+          {/* deep blue fill from below for color depth */}
+          <pointLight position={[0, -5, 4]} intensity={0.7} color="#3060a0" />
+          <Suspense fallback={null}>
+            <HeroModel />
+            <ContactShadows position={[0, -2, 0]} opacity={0.55} scale={14} blur={2.8} far={5} color="#000000" />
+          </Suspense>
+        </Canvas>
       </div>
 
       <div className="hero3d-meta">
