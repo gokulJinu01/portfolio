@@ -26,6 +26,12 @@ const PROJECTS = [
     host: "mme.railtech.io",
     shot: mmeShot,
     year: "2025",
+    proof: [
+      "100% on LongMemEval-S Abstention (n=30)",
+      "+10.85pp fidelity vs Mem0, p<0.001 (n=470)",
+      "pip install railtech-mme",
+    ],
+    caseStudy: "/mme",
   },
   {
     n: "/03",
@@ -100,21 +106,41 @@ const ProjectsSection = () => {
       <SecHead num="02" title="WORKS" kicker="Selected projects" />
 
       <div className="works3d-shell">
-        <ul className="works3d-list">
-          {PROJECTS.map((pr, i) => (
-            <li
-              key={pr.n}
-              className={"works3d-row" + (i === active ? " is-active" : "")}
-              onMouseEnter={() => setActive(i)}
-              onClick={() => setActive(i)}
-            >
-              <span className="works3d-n mono">{pr.n}</span>
-              <span className="works3d-t">{pr.title}</span>
-              <span className="works3d-y mono">{pr.year}</span>
-              <span className="works3d-arrow">→</span>
-            </li>
-          ))}
-        </ul>
+        <div className="works3d-rail">
+          <ul className="works3d-list">
+            {PROJECTS.map((pr, i) => (
+              <li
+                key={pr.n}
+                className={"works3d-row" + (i === active ? " is-active" : "")}
+                onClick={() => setActive(i)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setActive(i);
+                  }
+                }}
+              >
+                <span className="works3d-n mono">{pr.n}</span>
+                <span className="works3d-t">{pr.title}</span>
+                <span className="works3d-y mono">{pr.year}</span>
+                <span className="works3d-arrow">→</span>
+              </li>
+            ))}
+          </ul>
+
+          {p.caseStudy && (
+            <a href={p.caseStudy} className="works3d-rail-cta">
+              <div className="mono works3d-rail-cta-kicker">DEEP DIVE /</div>
+              <div className="works3d-rail-cta-title">Read the case study</div>
+              <div className="mono works3d-rail-cta-meta">
+                Benchmarks · architecture · honest losses
+              </div>
+              <div className="works3d-rail-cta-arrow">→</div>
+            </a>
+          )}
+        </div>
 
         <div className="works3d-detail">
           <div className="works3d-card">
@@ -136,6 +162,13 @@ const ProjectsSection = () => {
               )}
             </div>
             <p className="works3d-blurb">{p.blurb}</p>
+            {p.proof && (
+              <ul className="works3d-proof mono">
+                {p.proof.map((line, i) => (
+                  <li key={i}>{line}</li>
+                ))}
+              </ul>
+            )}
             <ProjectPreview p={p} idx={active} />
             <div className="works3d-cols works3d-cols-tight">
               <ul className="works3d-tags">

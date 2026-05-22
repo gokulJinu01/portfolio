@@ -6,7 +6,7 @@ const PILLARS = [
   ["/01", "Infrastructure & Security", "Agent-execution runtimes with containerised task runners and layered security."],
   ["/02", "Observability", "Prometheus / Grafana / Jaeger with timeouts, retries, circuit breakers."],
   ["/03", "Memory Systems", "Tag-based memory layers with bounded graph retrieval and deterministic pack assembly."],
-  ["/04", "Research", "Whitepapers on tag-graph memory retrieval and explainability."],
+  ["/04", "Research", "Benchmarking memory systems — fidelity, abstention, audit-trail. Pre-registered predictions, reproducible runs."],
 ];
 
 const AboutSection = () => {

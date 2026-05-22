@@ -59,7 +59,82 @@
   font-size: 15px;
   color: var(--ink-dim);
   line-height: 1.6;
-  margin-bottom: 22px;
+  margin-bottom: 14px;
+}
+/* Left-rail container: holds the list + the optional case-study CTA below it.
+   Uses the previously-empty space under the project selector. */
+.works3d-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+.works3d-rail-cta {
+  display: block;
+  position: relative;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--ink);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+.works3d-rail-cta:hover {
+  transform: translate(-2px, -2px);
+  border-color: var(--line-strong);
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+}
+.works3d-rail-cta-kicker {
+  font-size: 10px;
+  color: var(--ink-faint);
+  letter-spacing: 0.18em;
+  margin-bottom: 10px;
+}
+.works3d-rail-cta-title {
+  font-family: var(--display);
+  font-size: 22px;
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.works3d-rail-cta-meta {
+  font-size: 11px;
+  color: var(--ink-dim);
+  letter-spacing: 0.04em;
+}
+.works3d-rail-cta-arrow {
+  position: absolute;
+  right: 22px;
+  bottom: 22px;
+  font-size: 22px;
+  color: var(--ink);
+  opacity: 0.5;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+.works3d-rail-cta:hover .works3d-rail-cta-arrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
+.works3d-proof {
+  list-style: none;
+  padding: 12px 14px;
+  margin: 0 0 22px;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--ink);
+  border-radius: 4px;
+  background: var(--surface, rgba(255, 255, 255, 0.02));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.works3d-proof li::before {
+  content: "▸ ";
+  color: var(--ink-faint);
+  margin-right: 4px;
 }
 .works3d-cols {
   display: grid;

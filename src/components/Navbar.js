@@ -14,12 +14,43 @@ const Navbar = () => {
     typeof window !== "undefined" && window.location.hash ? window.location.hash : "#home"
   );
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     const onHash = () => setHash(window.location.hash || "#home");
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
+
+  // Hide on scroll down, reveal on scroll up. Always visible near top
+  // and while the mobile menu is open.
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let ticking = false;
+    const update = () => {
+      const y = window.scrollY;
+      const delta = y - lastY;
+      if (open) {
+        setHidden(false);
+      } else if (y < 80) {
+        setHidden(false);
+      } else if (delta > 6) {
+        setHidden(true);
+      } else if (delta < -6) {
+        setHidden(false);
+      }
+      lastY = y;
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [open]);
 
   // Scroll-spy: pick the section closest to the top of the viewport
   useEffect(() => {
@@ -57,7 +88,7 @@ const Navbar = () => {
   const pick = (h) => { setHash(h); setOpen(false); };
 
   return (
-    <nav className="nav3d" aria-label="Primary">
+    <nav className={"nav3d" + (hidden ? " is-hidden" : "")} aria-label="Primary">
       <a href="#home" className="nav3d-logo" onClick={() => pick("#home")}>
         <span className="nav3d-logo-face">GJ</span>
         <span className="nav3d-logo-side" />
